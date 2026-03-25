@@ -19,15 +19,12 @@ function formatDate(isoString) {
 ============================== */
 async function loadDashboard() {
   try {
-    const [subjectsRes, tasksRes, examsRes] = await Promise.all([
-      fetch("/subjects", { credentials: "include" }),
-      fetch("/api/schedule", { credentials: "include" }),
-      fetch("/exams", { credentials: "include" })
-    ]);
+    const res = await fetch("/api/dashboard-data", { credentials: "include" });
+    const data = await res.json();
 
-    const subjects = await subjectsRes.json();
-    const tasks = await tasksRes.json();
-    const exams = (await examsRes.json()) || [];
+    const subjects = data.subjects;
+    const tasks = data.tasks;
+    const exams = data.exams;
 
     document.getElementById("totalSubjects").textContent = subjects.length;
     document.getElementById("totalTasks").textContent = tasks.length;
