@@ -428,15 +428,16 @@ app.delete("/exams/:id", (req, res) => {
   });
 });
 /* =====================================================
-   SCHEDULE & DASHBOARD API
+   SCHEDULE ROUTES
 ===================================================== */
+const schedulePath = path.join(__dirname, "../frontend/schedule.html");
 
-// Serve Schedule HTML page
-app.get("/schedule.html", isAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/schedule.html"));
+// Serve schedule HTML page
+app.get("/schedule", isAuth, (req, res) => {
+  res.sendFile(schedulePath);
 });
 
-// Serve tasks JSON for frontend (Dashboard + Schedule)
+// Serve tasks JSON for schedule page
 app.get("/api/schedule", isAuth, (req, res) => {
   const sql = `
     SELECT tasks.*, subjects.name AS subject
@@ -448,20 +449,40 @@ app.get("/api/schedule", isAuth, (req, res) => {
 
   db.query(sql, [req.session.user.id], (err, results) => {
     if (err) {
-      console.error("Error fetching schedule:", err);
+      console.error(err);
       return res.json([]);
     }
+    res.json(results);
+  });
+});
 
-    // Convert completed from 0/1 to boolean
-    const formatted = results.map(t => ({
-      id: t.id,
-      title: t.title,
-      due_date: t.due_date ? t.due_date.toISOString().split('T')[0] : null,
-      subject: t.subject,
-      completed: t.completed === 1
-    }));
+/* =====================================================
+   DASHBOARD ROUTES
+===================================================== */
+const dashboardPath = path.join(__dirname, "../frontend/dashboard.html");
 
-    res.json(formatted);
+// Serve dashboard HTML page
+app.get("/dashboard", isAuth, (req, res) => {
+  res.sendFile(dashboardPath);
+});
+
+// Dashboard JSON data
+app.get("/api/dashboard-data", isAuth, (req, res) => {
+  Promise.all([
+    new Promise((resolve, reject) => {
+      db.query("SELECT * FROM subjects WHERE user_id = ?", [req.session.user.id], (err, results) => err ? reject(err) : resolve(results));
+    }),
+    new Promise((resolve, reject) => {
+      db.query("SELECT tasks.*, subjects.name AS subject FROM tasks JOIN subjects ON tasks.subject_id = subjects.id WHERE tasks.user_id = ? ORDER BY tasks.due_date ASC", [req.session.user.id], (err, results) => err ? reject(err) : resolve(results));
+    }),
+    new Promise((resolve, reject) => {
+      db.query("SELECT * FROM exams WHERE user_id = ? ORDER BY exam_date ASC", [req.session.user.id], (err, results) => err ? reject(err) : resolve(results));
+    })
+  ])
+  .then(([subjects, tasks, exams]) => res.json({ subjects, tasks, exams }))
+  .catch(err => {
+    console.error(err);
+    res.json({ subjects: [], tasks: [], exams: [] });
   });
 });
 /* ================= STUDY SESSION ================= */
