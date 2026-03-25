@@ -184,7 +184,7 @@ table.innerHTML=""
 
 try{
 
-const res = await fetch("/api/schedule")
+const res = await fetch("/api/schedule", { credentials: "include" });
 const tasks=await res.json()
 
 if(tasks.length===0){
