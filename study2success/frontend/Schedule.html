@@ -100,7 +100,7 @@ background:#fef9c3;
 <ul class="nav flex-column mt-4">
 <li><a class="nav-link" href="dashboard.html">Dashboard</a></li>
 <li><a class="nav-link" href="task.html">Tasks</a></li>
-<li><a class="nav-link active" href="schedule.html">Schedule</a></li>
+<li><a class="nav-link active" href="/schedule">Schedule</a></li>
 <li><a class="nav-link" href="analytics.html">Analytics</a></li>
 <li><a class="nav-link" href="settings.html">Settings</a></li>
 </ul>
@@ -184,7 +184,7 @@ table.innerHTML=""
 
 try{
 
-const res=await fetch("http://localhost:3000/schedule")
+const res = await fetch("/api/schedule")
 const tasks=await res.json()
 
 if(tasks.length===0){
