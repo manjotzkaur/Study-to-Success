@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendar | Study to Success</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Custom CSS -->
+<link rel="stylesheet" href="css/calendar.css">
+<link rel="stylesheet" href="css/theme.css">
+
+</head>
+
+<body id="body">
+
+<div class="app-layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+<h4>Study to Success</h4>
+<p class="subtitle">Smart Planner</p>
+
+<a href="dashboard.html">Dashboard</a>
+<a href="task.html">Tasks</a>
+<a href="schedule.html">Schedule</a>
+<a href="exam.html">Exams</a>
+<a class="active" href="calendar.html">Calendar</a>
+
+<div class="user-box">
+<div class="avatar">ST</div>
+
+<div>
+<strong id="studentName">Student</strong>
+<small>Logged in</small>
+</div>
+
+</div>
+
+</aside>
+
+<!-- MAIN CONTENT -->
+
+<main class="main-content">
+
+<!-- CALENDAR HEADER -->
+
+<div class="calendar-header">
+
+<button class="btn btn-outline-primary btn-sm" id="prevMonth">
+◀
+</button>
+
+<h4 id="calendarTitle" class="mb-0"></h4>
+
+<button class="btn btn-outline-primary btn-sm" id="nextMonth">
+▶
+</button>
+
+</div>
+
+<!-- DAY NAMES -->
+
+<div class="calendar-grid">
+
+<div class="day-name">Sun</div>
+<div class="day-name">Mon</div>
+<div class="day-name">Tue</div>
+<div class="day-name">Wed</div>
+<div class="day-name">Thu</div>
+<div class="day-name">Fri</div>
+<div class="day-name">Sat</div>
+
+</div>
+
+<!-- CALENDAR DAYS -->
+
+<div id="calendarDays" class="calendar-days"></div>
+
+</main>
+
+</div>
+
+<script src="js/calendar.js"></script>
+
+</body>
+</html>

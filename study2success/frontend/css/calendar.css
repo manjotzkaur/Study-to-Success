@@ -1,0 +1,168 @@
+/* ===== GLOBAL ===== */
+body{
+font-family:'Inter',sans-serif;
+background:#f8fafc;
+margin:0;
+}
+
+/* ===== LAYOUT ===== */
+.app-layout{
+display:flex;
+min-height:100vh;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+width:260px;
+background:#ffffff;
+border-right:1px solid #e5e7eb;
+padding:20px;
+display:flex;
+flex-direction:column;
+}
+
+.subtitle{
+font-size:12px;
+color:#6b7280;
+margin-bottom:20px;
+}
+
+.sidebar a{
+padding:10px;
+text-decoration:none;
+color:#374151;
+border-radius:6px;
+margin-bottom:5px;
+}
+
+.sidebar a:hover,
+.sidebar a.active{
+background:#eef2ff;
+color:#4f46e5;
+font-weight:600;
+}
+
+.user-box{
+margin-top:auto;
+display:flex;
+align-items:center;
+border-top:1px solid #e5e7eb;
+padding-top:15px;
+}
+
+.avatar{
+height:40px;
+width:40px;
+background:#4f46e5;
+color:white;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+margin-right:10px;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content{
+flex:1;
+padding:25px;
+display:flex;
+flex-direction:column;
+align-items:center;
+}
+
+/* ===== CALENDAR HEADER ===== */
+.calendar-header{
+width:100%;
+max-width:1000px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:16px;
+}
+
+/* ===== DAY NAMES ===== */
+.calendar-grid{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:12px;
+width:100%;
+max-width:1000px;
+margin-bottom:10px;
+}
+
+.day-name{
+text-align:center;
+font-weight:600;
+color:#6b7280;
+}
+
+/* ===== CALENDAR DAYS ===== */
+.calendar-days{
+display:grid;
+grid-template-columns:repeat(7,1fr);
+gap:12px;
+width:100%;
+max-width:1000px;
+}
+
+/* ===== DAY BOX ===== */
+.day-box{
+background:#ffffff;
+border:1px solid #e5e7eb;
+border-radius:14px;
+min-height:95px;
+padding:10px;
+font-size:14px;
+display:flex;
+flex-direction:column;
+transition:0.2s;
+}
+
+.day-box:hover{
+border-color:#4f46e5;
+box-shadow:0 4px 10px rgba(0,0,0,0.05);
+}
+
+.day-box strong{
+font-size:15px;
+font-weight:600;
+color:#111827;
+margin-bottom:4px;
+}
+
+/* ===== EMPTY DAYS ===== */
+.day-box.muted{
+background:#f1f5f9;
+border:none;
+}
+
+/* ===== TODAY HIGHLIGHT ===== */
+.day-box.today{
+border:2px solid #4f46e5;
+background:#eef2ff;
+}
+
+/* ===== EVENTS ===== */
+.event{
+margin-top:4px;
+font-size:11px;
+padding:4px 6px;
+border-radius:6px;
+color:white;
+font-weight:500;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+
+/* TASK EVENT */
+.event.task{
+background:#22c55e;
+}
+
+/* EXAM EVENT */
+.event.exam{
+background:#ef4444;
+}

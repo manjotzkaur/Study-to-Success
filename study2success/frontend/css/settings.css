@@ -1,0 +1,105 @@
+/* Sidebar */
+.sidebar {
+  background-color: #1e40af;
+  color: white;
+}
+
+.sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 8px;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Cards */
+.card {
+  border-radius: 12px;
+}
+
+/* Headings */
+h2 {
+  font-weight: 700;
+}
+
+/* Buttons spacing */
+button {
+  margin-top: 10px;
+}
+/* ===== DARK MODE THEME ===== */
+
+.dark-mode{
+  background:#1f2937;
+  color:#f3f4f6;
+}
+
+/* Main content background */
+.dark-mode main{
+  background:#1f2937 !important;
+}
+
+/* Cards */
+.dark-mode .card{
+  background:#374151;
+  color:#f3f4f6;
+  border:none;
+}
+
+/* Form inputs */
+.dark-mode .form-control{
+  background:#4b5563;
+  color:#f9fafb;
+  border:1px solid #6b7280;
+}
+
+.dark-mode .form-control::placeholder{
+  color:#d1d5db;
+}
+
+/* Labels */
+.dark-mode label{
+  color:#e5e7eb;
+}
+
+/* Buttons */
+.dark-mode .btn-primary{
+  background:#2563eb;
+  border:none;
+}
+
+.dark-mode .btn-success{
+  background:#16a34a;
+  border:none;
+}
+
+.dark-mode .btn-danger{
+  background:#dc2626;
+  border:none;
+}
+
+/* Sidebar */
+.dark-mode .sidebar{
+  background:#111827;
+}
+
+/* Toggle text */
+.dark-mode .form-check-label{
+  color:#f3f4f6;
+}
+
+/* Navbar / headings */
+.dark-mode h1,
+.dark-mode h2,
+.dark-mode h3,
+.dark-mode h4,
+.dark-mode h5{
+  color:#f9fafb;
+}
+
+/* Muted text */
+.dark-mode .text-muted{
+  color:#9ca3af !important;
+}

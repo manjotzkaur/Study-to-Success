@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Register</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="css/signup.css">
+<link rel="stylesheet" href="css/theme.css">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body id="body">
+
+<div class="main-container">
+
+  <!-- LEFT PANEL -->
+  <div class="left-panel">
+    <h1>Create Account 🚀</h1>
+    <p>
+      Start your journey towards smarter learning.  
+      Organize your tasks, track progress, and achieve your goals.
+    </p>
+
+    <img src="signup.png" class="login-image" alt="Signup Image">
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="right-panel">
+
+    <div class="login-card">
+
+      <h2>Register</h2>
+      <p>Create your study planner account</p>
+
+      <form id="registerForm">
+
+        <input type="text" id="username" placeholder="Username" required>
+
+        <input type="email" id="email" placeholder="Email" required>
+
+        <div class="input-group">
+          <input type="password" id="password" placeholder="Password (Length of 5)" required>
+          <i class="bi bi-eye toggle-password" id="togglePassword"></i>
+        </div>
+
+        <p id="passwordMessage" class="password-msg"></p>
+
+        <button type="submit">Register</button>
+
+      </form>
+
+      <div class="links">
+        Already have an account?
+        <a href="login.html">Login</a>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+const passwordInput = document.getElementById("password");
+const passwordMessage = document.getElementById("passwordMessage");
+const togglePassword = document.getElementById("togglePassword");
+
+/* PASSWORD VALIDATION */
+passwordInput.addEventListener("input", function () {
+    const value = passwordInput.value;
+
+    const regex = /^(?=(?:.*[A-Za-z]){2})(?=(?:.*\d){2})(?=(?:.*[^A-Za-z0-9]){1}).{5}$/;
+
+    if (value.length === 0) {
+        passwordMessage.textContent = "";
+    } 
+    else if (!regex.test(value)) {
+        passwordMessage.textContent = "Password must be 5 characters: 2 letters, 2 digits, 1 special character.";
+        passwordMessage.style.color = "red";
+    } 
+    else {
+        passwordMessage.textContent = "Password format is valid ✔";
+        passwordMessage.style.color = "lightgreen";
+    }
+});
+
+/* TOGGLE PASSWORD */
+togglePassword.addEventListener("click", function () {
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        togglePassword.classList.replace("bi-eye","bi-eye-slash");
+    } else {
+        passwordInput.type = "password";
+        togglePassword.classList.replace("bi-eye-slash","bi-eye");
+    }
+});
+
+/* REGISTER */
+document.getElementById("registerForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = passwordInput.value.trim();
+
+    const regex = /^(?=(?:.*[A-Za-z]){2})(?=(?:.*\d){2})(?=(?:.*[^A-Za-z0-9]){1}).{5}$/;
+
+    // ✅ Check empty
+    if (!username || !email || !password) {
+        alert("Please fill all fields");
+        return;
+    }
+
+    // ✅ Email validation
+    if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        alert("Enter a valid email");
+        return;
+    }
+
+    // ✅ Enforce password rule
+    if (!regex.test(password)) {
+        alert("Password does not meet required format");
+        return;
+    }
+
+    try {
+        const response = await fetch("/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, email, password })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert("Registration successful! Please login.");
+            window.location.href = "login.html";
+        } else {
+            alert(result.message || "Registration failed");
+        }
+
+    } catch (error) {
+        alert("Server error. Try again.");
+    }
+});
+
+/* DARK MODE */
+if(localStorage.getItem("darkMode") === "true"){
+  document.body.classList.add("dark-mode");
+}
+</script>
+
+</body>
+</html>

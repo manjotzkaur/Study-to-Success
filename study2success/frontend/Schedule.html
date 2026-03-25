@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schedule | Study to Success</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="css/theme.css">
+<style>
+
+body{
+background:linear-gradient(120deg,#e0e7ff,#ffffff);
+font-family:"Segoe UI",sans-serif;
+}
+
+/* Sidebar */
+
+.sidebar{
+background:linear-gradient(180deg,#2563eb,#1e40af);
+color:white;
+box-shadow:4px 0 15px rgba(0,0,0,0.1);
+}
+
+.sidebar .nav-link{
+color:rgba(255,255,255,0.75);
+padding:10px 14px;
+border-radius:8px;
+margin-bottom:6px;
+transition:.3s;
+}
+
+.sidebar .nav-link:hover{
+background:rgba(255,255,255,0.15);
+color:white;
+transform:translateX(5px);
+}
+
+.sidebar .nav-link.active{
+background:rgba(255,255,255,0.25);
+color:white;
+font-weight:600;
+}
+
+/* Cards */
+
+.card{
+border:none;
+border-radius:16px;
+background:white;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+/* Progress Cards */
+
+.stat-card{
+text-align:center;
+padding:20px;
+}
+
+.stat-number{
+font-size:28px;
+font-weight:700;
+}
+
+/* Table */
+
+.table thead{
+background:#e0e7ff;
+}
+
+.table tbody tr:hover{
+background:#f1f5ff;
+}
+
+/* Row highlight */
+
+.overdue{
+background:#ffe4e6;
+}
+
+.today{
+background:#fef9c3;
+}
+
+</style>
+</head>
+
+<body id="body">
+<div class="container-fluid">
+<div class="row min-vh-100">
+
+<!-- Sidebar -->
+
+<aside class="col-md-3 col-lg-2 sidebar p-4">
+
+<h4>Study to Success</h4>
+<p class="small">Smart Study Planner</p>
+
+<ul class="nav flex-column mt-4">
+<li><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+<li><a class="nav-link" href="task.html">Tasks</a></li>
+<li><a class="nav-link active" href="schedule.html">Schedule</a></li>
+<li><a class="nav-link" href="analytics.html">Analytics</a></li>
+<li><a class="nav-link" href="settings.html">Settings</a></li>
+</ul>
+
+</aside>
+
+<!-- Main -->
+
+<main class="col-md-9 col-lg-10 p-5">
+
+<h2 class="mb-2">Study Schedule</h2>
+<p class="text-muted mb-4">Your study tasks organized by due date</p>
+
+<!-- Progress Cards -->
+
+<div class="row mb-4">
+
+<div class="col-md-4">
+<div class="card stat-card">
+<div class="stat-number text-success" id="completedCount">0</div>
+<div>Completed Tasks</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card stat-card">
+<div class="stat-number text-warning" id="pendingCount">0</div>
+<div>Pending Tasks</div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="card stat-card">
+<div class="stat-number text-danger" id="overdueCount">0</div>
+<div>Overdue Tasks</div>
+</div>
+</div>
+
+</div>
+
+<!-- Table -->
+
+<div class="card p-3">
+
+<div class="card-body">
+
+<table class="table table-hover text-center align-middle">
+
+<thead>
+<tr>
+<th>Date</th>
+<th>Task</th>
+<th>Subject</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody id="scheduleTable"></tbody>
+
+</table>
+
+</div>
+</div>
+
+</main>
+
+</div>
+</div>
+
+<script>
+
+async function loadSchedule(){
+
+const table=document.getElementById("scheduleTable")
+
+let completed=0
+let pending=0
+let overdue=0
+
+table.innerHTML=""
+
+try{
+
+const res=await fetch("http://localhost:3000/schedule")
+const tasks=await res.json()
+
+if(tasks.length===0){
+
+table.innerHTML=`
+<tr>
+<td colspan="4" class="text-muted">No tasks added</td>
+</tr>
+`
+return
+}
+
+const today=new Date().toISOString().split("T")[0]
+
+tasks.forEach(task=>{
+
+let rowClass=""
+let status=""
+
+if(task.completed){
+
+status='<span class="badge bg-success">Completed</span>'
+completed++
+
+}else if(task.due_date<today){
+
+rowClass="overdue"
+status='<span class="badge bg-danger">Overdue</span>'
+overdue++
+
+}else if(task.due_date===today){
+
+rowClass="today"
+status='<span class="badge bg-warning text-dark">Today</span>'
+pending++
+
+}else{
+
+status='<span class="badge bg-secondary">Pending</span>'
+pending++
+
+}
+
+const date=task.due_date
+? new Date(task.due_date).toLocaleDateString()
+: ""
+
+table.innerHTML+=`
+<tr class="${rowClass}">
+<td>${date}</td>
+<td>${task.title}</td>
+<td>${task.subject}</td>
+<td>${status}</td>
+</tr>
+`
+
+})
+
+document.getElementById("completedCount").innerText=completed
+document.getElementById("pendingCount").innerText=pending
+document.getElementById("overdueCount").innerText=overdue
+
+}catch(err){
+
+console.error(err)
+
+table.innerHTML=`
+<tr>
+<td colspan="4" class="text-danger">Failed to load schedule</td>
+</tr>
+`
+
+}
+
+}
+
+window.onload=loadSchedule
+if(localStorage.getItem("darkMode") === "true"){
+  document.body.classList.add("dark-mode");
+}
+</script>
+
+</body>
+</html>

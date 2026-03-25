@@ -1,0 +1,224 @@
+/* ===== GLOBAL ===== */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Inter',sans-serif;
+height:100vh;
+}
+
+/* ===== MAIN LAYOUT ===== */
+.main-container{
+display:flex;
+height:100vh;
+background:linear-gradient(135deg,#3B82F6,#10B981);
+
+align-items:center;
+justify-content:center;
+gap:30px;
+padding:20px;
+}
+
+/* ===== LEFT PANEL ===== */
+.left-panel{
+flex:none;
+max-width:480px;
+
+color:white;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:flex-start;
+
+padding:40px;
+
+/* smoother blend */
+background:linear-gradient(
+to right,
+rgba(0,0,0,0.15),
+rgba(0,0,0,0)
+);
+}
+
+.left-panel h1{
+font-size:42px;
+margin-bottom:15px;
+}
+
+.left-panel p{
+max-width:400px;
+font-size:16px;
+opacity:0.9;
+line-height:1.6;
+}
+
+/* IMAGE */
+.login-image{
+width:280px;
+margin-top:20px;
+animation:float 4s ease-in-out infinite;
+}
+
+@keyframes float{
+0%{transform:translateY(0);}
+50%{transform:translateY(-10px);}
+100%{transform:translateY(0);}
+}
+
+/* ===== RIGHT PANEL ===== */
+.right-panel{
+flex:none;
+width:380px;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+background:transparent;
+}
+
+/* ===== LOGIN CARD ===== */
+.login-card{
+width:100%;
+padding:35px;
+
+/* 2% bigger */
+transform:scale(1.02);
+
+background:rgba(255,255,255,0.15);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.2);
+
+border-radius:20px;
+color:white;
+
+/* premium shadow + glow */
+box-shadow:
+0 25px 50px rgba(0,0,0,0.3),
+0 0 30px rgba(255,255,255,0.1);
+}
+
+.login-card h2{
+margin-bottom:10px;
+color:#ffffff;
+}
+
+.login-card p{
+margin-bottom:20px;
+color:#e5e7eb;
+}
+
+/* ===== INPUT ===== */
+.login-card input{
+width:100%;
+padding:12px 14px;
+margin-bottom:15px;
+border-radius:10px;
+border:1px solid #d1d5db;
+font-size:1rem;
+
+/* improved visibility */
+background:rgba(255,255,255,0.95);
+}
+
+.login-card input:focus{
+outline:none;
+border-color:#3B82F6;
+box-shadow:0 0 8px rgba(59,130,246,0.3);
+}
+
+/* PASSWORD ICON */
+.input-group{
+position:relative;
+}
+
+.toggle-password{
+position:absolute;
+right:12px;
+top:50%;
+transform:translateY(-50%);
+cursor:pointer;
+color:#555;
+}
+
+/* ===== BUTTON ===== */
+.login-card button{
+width:100%;
+padding:12px;
+
+/* improved gradient */
+background:linear-gradient(90deg,#2563eb,#3B82F6);
+
+color:white;
+border:none;
+border-radius:12px;
+font-weight:600;
+cursor:pointer;
+transition:0.3s;
+}
+
+.login-card button:hover{
+transform:translateY(-2px);
+box-shadow:0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* ===== LINKS ===== */
+.links{
+margin-top:15px;
+font-size:0.9rem;
+color:#e5e7eb;
+}
+
+.links a{
+color:#ffffff;
+text-decoration:none;
+font-weight:500;
+}
+
+.links a:hover{
+text-decoration:underline;
+}
+
+/* FORGOT */
+.forgot{
+text-align:right;
+margin-bottom:10px;
+font-size:0.85rem;
+}
+
+.forgot a{
+color:#ffffff;
+text-decoration:none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+
+.main-container{
+flex-direction:column;
+gap:20px;
+}
+
+.left-panel{
+align-items:center;
+text-align:center;
+padding:20px;
+}
+
+.left-panel h1{
+font-size:28px;
+}
+
+.login-image{
+width:220px;
+}
+
+.right-panel{
+width:100%;
+max-width:360px;
+}
+
+}

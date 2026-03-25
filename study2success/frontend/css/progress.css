@@ -1,0 +1,186 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f8fafc;
+  margin: 0;
+}
+
+/* Layout */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.sidebar a {
+  padding: 10px;
+  text-decoration: none;
+  color: #374151;
+  border-radius: 6px;
+  margin-bottom: 5px;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 600;
+}
+
+.user-box {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 15px;
+}
+
+.avatar {
+  height: 40px;
+  width: 40px;
+  background: #3b82f6;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+/* Main */
+.main-content {
+  flex: 1;
+  padding: 25px;
+}
+
+.top-header {
+  background: white;
+  border: 1px solid #e5e7eb;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Progress Summary */
+.progress-summary {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.percentage span {
+  font-size: 36px;
+  font-weight: 800;
+  color: #22c55e;
+}
+
+.percentage small {
+  display: block;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.success-box {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+/* Metrics */
+.metric-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.metric-card h4 {
+  margin: 5px 0;
+}
+
+.trend {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.trend.up {
+  color: #16a34a;
+}
+/* =========================
+   DARK MODE
+========================= */
+
+body.dark {
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+/* Sidebar */
+body.dark .sidebar {
+  background: #020617;
+  border-right: 1px solid #1e293b;
+}
+
+body.dark .sidebar a {
+  color: #cbd5f5;
+}
+
+body.dark .sidebar a:hover,
+body.dark .sidebar a.active {
+  background: #1e293b;
+  color: #22c55e;
+}
+
+/* Main content */
+body.dark .main-content {
+  background: #0f172a;
+}
+
+/* Header */
+body.dark .top-header {
+  background: #020617;
+  border-color: #1e293b;
+}
+
+/* Cards */
+body.dark .progress-summary,
+body.dark .metric-card {
+  background: #020617;
+  border-color: #1e293b;
+}
+
+/* Text */
+body.dark .text-muted {
+  color: #94a3b8 !important;
+}
+
+/* Success box */
+body.dark .success-box {
+  background: #022c22;
+  border-color: #14532d;
+}
+
+/* Percentage */
+body.dark .percentage span {
+  color: #4ade80;
+}

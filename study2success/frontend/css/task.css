@@ -1,0 +1,32 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  background-color: #1e1b4b;
+  color: white;
+}
+
+.sidebar .nav-link {
+  color: #c7d2fe;
+  margin-bottom: 6px;
+  border-radius: 5px;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .nav-link.active {
+  background-color: #4338ca;
+  color: white;
+}
+
+/* Task name completed */
+.completed {
+  text-decoration: line-through;
+  color: gray;
+}
+.completed-row {
+  background-color: #e6ffed;
+  text-decoration: line-through;
+  color: #6c757d;
+}

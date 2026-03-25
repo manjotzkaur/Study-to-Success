@@ -1,0 +1,177 @@
+/* ===============================
+   DASHBOARD CSS
+=============================== */
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f8fafc;
+  margin: 0;
+}
+
+.dashboard-wrapper {
+  display: flex;
+  height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 250px;
+  background: #ffffff;
+  border-right: 1px solid #ddd;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .logo {
+  color: #4f46e5;
+  margin-bottom: 30px;
+}
+
+/* Sidebar subheading (light mode) */
+.sidebar p {
+  color: #000 !important;  /* ✅ force black in light mode */
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.sidebar a {
+  text-decoration: none;
+  color: #555;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 5px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: #eef2ff;
+  color: #4f46e5;
+}
+
+.logout {
+  margin-top: auto;
+}
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 28px;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  margin-bottom: 30px;
+}
+
+.header p {
+  margin: 0;
+  color: #6b7280;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  border: none;
+  background: #f3f4f6;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.theme-toggle:hover {
+  background: #e5e7eb;
+}
+
+/* CARDS */
+.card-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.card-box h3 {
+  font-size: 28px;
+  margin: 0;
+}
+
+.progress-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.activity-list {
+  padding-left: 20px;
+}
+
+/* ===== DARK MODE ===== */
+body.dark-mode {
+  background-color: #0f172a;
+  color: #e5e7eb;
+}
+
+/* Sidebar dark mode */
+body.dark-mode .sidebar {
+  background-color: #020617;
+  border-right: 1px solid #1e293b;
+}
+
+body.dark-mode .sidebar h4,
+body.dark-mode .sidebar p {
+  color: #e5e7eb;
+}
+
+body.dark-mode .sidebar a {
+  color: #cbd5f5;
+}
+
+body.dark-mode .sidebar a:hover,
+body.dark-mode .sidebar a.active {
+  background-color: #1e293b;
+  color: #a5b4fc;
+}
+
+/* Header dark mode */
+body.dark-mode .header {
+  background-color: #020617;
+  color: #e5e7eb;
+}
+
+/* Cards dark mode */
+body.dark-mode .card-box,
+body.dark-mode .progress-box {
+  background-color: #020617;
+  color: #e5e7eb;
+}
+
+/* Main content dark mode */
+body.dark-mode .main-content {
+  background-color: transparent;
+}
+
+/* Muted text dark mode */
+body.dark-mode p,
+body.dark-mode span {
+  color: #cbd5e1;
+}
+
+/* Links dark mode */
+body.dark-mode a {
+  color: #93c5fd;
+}
+
+body.dark-mode a:hover {
+  color: #bfdbfe;
+}

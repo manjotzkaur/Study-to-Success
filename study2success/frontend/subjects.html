@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Subjects | Study Planner</title>
+
+<!-- Link CSS -->
+ <link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/subjects.css">
+</head>
+
+<body id="body">
+<div class="wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2>StudyPlanner</h2>
+   <a href="dashboard.html">Dashboard</a>
+<a class="active" href="subjects.html">Subjects</a>
+<a href="task.html">Tasks</a>
+<a href="progress.html">Progress</a>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="header">
+      <div>
+        <h1>Your Subjects</h1>
+        <p>Manage your subjects easily</p>
+      </div>
+      <button id="openModal">Add Subject</button>
+    </div>
+
+    <!-- SUBJECTS GRID -->
+    <section class="grid" id="subjectGrid">
+      <div class="card">
+        <h3>Mathematics</h3>
+        <p>Algebra & Calculus</p>
+      </div>
+    </section>
+  </main>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3>Add Subject</h3>
+
+    <input id="subjectName" placeholder="Subject name">
+    <textarea id="subjectDesc" placeholder="Description"></textarea>
+
+    <div class="modal-actions">
+      <button class="cancel" id="closeModal">Cancel</button>
+      <button class="save" id="saveSubject">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<script src="js/subjects.js"></script>
+
+</body>
+</html>
