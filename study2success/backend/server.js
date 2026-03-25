@@ -428,17 +428,16 @@ app.delete("/exams/:id", (req, res) => {
   });
 });
 /* =====================================================
-   SCHEDULE
+   SCHEDULE & DASHBOARD API
 ===================================================== */
+
 // Serve Schedule HTML page
-app.get("/schedule", isAuth, (req, res) => {
+app.get("/schedule.html", isAuth, (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/schedule.html"));
 });
 
-// Serve tasks JSON for frontend
-app.get("/api/schedule", (req, res) => {
-  if (!req.session.user) return res.json([]);
-
+// Serve tasks JSON for frontend (Dashboard + Schedule)
+app.get("/api/schedule", isAuth, (req, res) => {
   const sql = `
     SELECT tasks.*, subjects.name AS subject
     FROM tasks
@@ -449,14 +448,22 @@ app.get("/api/schedule", (req, res) => {
 
   db.query(sql, [req.session.user.id], (err, results) => {
     if (err) {
-      console.error(err);
+      console.error("Error fetching schedule:", err);
       return res.json([]);
     }
-    res.json(results);
+
+    // Convert completed from 0/1 to boolean
+    const formatted = results.map(t => ({
+      id: t.id,
+      title: t.title,
+      due_date: t.due_date ? t.due_date.toISOString().split('T')[0] : null,
+      subject: t.subject,
+      completed: t.completed === 1
+    }));
+
+    res.json(formatted);
   });
 });
-
-
 /* ================= STUDY SESSION ================= */
 
 app.post("/study-session", (req, res) => {
