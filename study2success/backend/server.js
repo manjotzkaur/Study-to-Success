@@ -430,8 +430,13 @@ app.delete("/exams/:id", (req, res) => {
 /* =====================================================
    SCHEDULE
 ===================================================== */
+// Serve Schedule HTML page
+app.get("/schedule", isAuth, (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/schedule.html"));
+});
 
-app.get("/schedule", (req, res) => {
+// Serve tasks JSON for frontend
+app.get("/api/schedule", (req, res) => {
   if (!req.session.user) return res.json([]);
 
   const sql = `
@@ -447,10 +452,10 @@ app.get("/schedule", (req, res) => {
       console.error(err);
       return res.json([]);
     }
-
     res.json(results);
   });
 });
+
 
 /* ================= STUDY SESSION ================= */
 
