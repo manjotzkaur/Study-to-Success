@@ -60,35 +60,30 @@
 
     <!-- SUMMARY CARDS -->
     <div class="row g-4 mt-2">
-
       <div class="col-md-3">
         <div class="card-box">
           <p>Total Subjects</p>
           <h3 id="totalSubjects">0</h3>
         </div>
       </div>
-
       <div class="col-md-3">
         <div class="card-box">
           <p>Total Tasks</p>
           <h3 id="totalTasks">0</h3>
         </div>
       </div>
-
       <div class="col-md-3">
         <div class="card-box">
           <p>Completed Tasks</p>
           <h3 id="completedTasks">0</h3>
         </div>
       </div>
-
       <div class="col-md-3">
         <div class="card-box">
           <p>Upcoming Exams</p>
           <h3 id="upcomingExams">0</h3>
         </div>
       </div>
-
     </div>
 
     <!-- PROGRESS -->
@@ -97,17 +92,14 @@
         <h5>Overall Study Progress</h5>
         <strong id="progressPercent">0%</strong>
       </div>
-
       <div class="progress mt-2">
         <div id="progressBar" class="progress-bar bg-primary" style="width:0%"></div>
       </div>
-
       <div class="row text-center mt-4">
         <div class="col">
           <small>Time Studied</small>
           <p id="studyTime">0h 0m 0s</p>
         </div>
-
         <div class="col">
           <small>Productivity</small>
           <p>High 🔥</p>
@@ -132,7 +124,7 @@
       <div class="col-lg-6">
         <div class="card-box text-center">
           <h5>Quick Actions</h5>
-          <button class="btn btn-primary m-2" id="openAddTaskBtn">Add New Task</button>
+          <button class="btn btn-primary m-2" id="openAddTaskBtn" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add New Task</button>
           <button class="btn btn-outline-secondary m-2" id="openViewStatsBtn">View Statistics</button>
         </div>
       </div>
@@ -164,20 +156,16 @@
 <div class="modal fade" id="addTaskModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4">
-
       <div class="modal-header border-0">
         <h5 class="modal-title">Add New Task</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-
       <div class="modal-body">
         <input type="text" id="newTaskInput" class="form-control" placeholder="Enter task name">
       </div>
-
       <div class="modal-footer border-0">
         <button id="saveTaskBtn" class="btn btn-primary">Add Task</button>
       </div>
-
     </div>
   </div>
 </div>
@@ -186,16 +174,13 @@
 <div class="modal fade" id="viewStatsModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4">
-
       <div class="modal-header border-0">
         <h5 class="modal-title">Study Statistics</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-
       <div class="modal-body">
         <p id="statsText"></p>
       </div>
-
     </div>
   </div>
 </div>
