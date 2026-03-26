@@ -40,6 +40,14 @@ async function loadExams() {
 
   try {
     const res = await fetch("/exams", { credentials: "include" });
+
+    // Handle unauthorized
+    if (res.status === 401) {
+      alert("Session expired. Please login again.");
+      window.location.href = "/login.html";
+      return;
+    }
+
     const exams = await res.json();
 
     if (!exams || exams.length === 0) {
@@ -73,6 +81,13 @@ async function loadExams() {
             method: "DELETE",
             credentials: "include"
           });
+
+          if (delRes.status === 401) {
+            alert("Session expired. Please login again.");
+            window.location.href = "/login.html";
+            return;
+          }
+
           const data = await delRes.json();
           if (data.success) loadExams();
           else alert("Failed to delete exam");
@@ -126,6 +141,12 @@ async function saveExam() {
       body: JSON.stringify({ subject, exam_date: date, exam_time: time, location })
     });
 
+    if (res.status === 401) {
+      alert("Session expired. Please login again.");
+      window.location.href = "/login.html";
+      return;
+    }
+
     const data = await res.json();
     if (data.success) {
       editingExamId = null;
@@ -164,8 +185,14 @@ document.getElementById("addExamBtn").addEventListener("click", () => {
 async function loadProfile() {
   try {
     const res = await fetch("/profile", { credentials: "include" });
+
+    if (res.status === 401) {
+      document.getElementById("studentName").textContent = "Guest";
+      return;
+    }
+
     const data = await res.json();
-    if (data.username) {
+    if (data && data.username) {
       document.getElementById("studentName").textContent = data.username;
       document.getElementById("profileUsername").textContent = data.username;
       document.getElementById("profileEmail").textContent = data.email;
