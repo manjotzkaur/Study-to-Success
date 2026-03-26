@@ -5,9 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Progress | Study to Success</title>
 
+<!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
+<!-- Custom CSS -->
 <link rel="stylesheet" href="css/progress.css">
 <link rel="stylesheet" href="css/theme.css">
 </head>
@@ -22,7 +24,6 @@
     <p class="subtitle">Smart Planner</p>
 
     <a href="dashboard.html">Dashboard</a>
-   
     <a class="active" href="progress.html">Progress</a>
   
     <div class="user-box">
@@ -38,19 +39,20 @@
   <main class="main-content">
 
     <!-- HEADER -->
-    <div class="top-header">
+    <div class="top-header d-flex justify-content-between w-100 mb-4">
       <h5>Your Learning Journey</h5>
       <button id="themeToggle" class="theme-btn">🌙</button>
     </div>
 
     <!-- OVERALL PROGRESS -->
-    <section class="progress-summary">
+    <section class="progress-summary w-100">
+
       <div class="d-flex justify-content-between align-items-end">
         <div>
           <h3>Overall Progress</h3>
           <p class="text-muted">You're doing great this semester</p>
         </div>
-        <div class="percentage">
+        <div class="percentage text-end">
           <span id="progressPercent">0%</span>
           <small>Complete</small>
         </div>
@@ -67,22 +69,24 @@
             You have completed
             <strong id="summaryCount">0 of 0 modules</strong>.
           </p>
+          <p id="studyHours">0 hrs studied | <span id="streakDays">0 Days</span> streak</p>
         </div>
 
         <div class="col-md-6">
-          <div class="success-box">
+          <div class="success-box p-3">
             <strong>✔ Success Insight</strong>
             <p>Stay consistent to improve your results 🚀</p>
           </div>
         </div>
       </div>
+
     </section>
 
     <!-- METRICS -->
     <section class="row g-4 mt-4">
 
       <div class="col-md-4">
-        <div class="metric-card">
+        <div class="metric-card p-3 border rounded">
           <small>Modules Completed</small>
           <h4 id="moduleCount">0 / 0</h4>
           <div class="progress mt-2">
@@ -91,22 +95,14 @@
         </div>
       </div>
 
-     <div class="col-md-4">
-  <div class="metric-card">
-    <small>Study Timer</small>
-    <h4 id="timerDisplay">0h 0m 0s</h4>
-
-    <button id="startStudy" class="btn btn-success btn-sm mt-2">
-      Start
-    </button>
-
-    <button id="stopStudy" class="btn btn-danger btn-sm mt-2">
-      Stop
-    </button>
-  </div>
-</div>
-
-      
+      <div class="col-md-4">
+        <div class="metric-card p-3 border rounded">
+          <small>Study Timer</small>
+          <h4 id="timerDisplay">0h 0m 0s</h4>
+          <button id="startStudy" class="btn btn-success btn-sm mt-2">Start</button>
+          <button id="stopStudy" class="btn btn-danger btn-sm mt-2">Stop</button>
+        </div>
+      </div>
 
     </section>
 
@@ -115,6 +111,5 @@
 
 <!-- JS -->
 <script src="js/progress.js"></script>
-
 </body>
 </html>
