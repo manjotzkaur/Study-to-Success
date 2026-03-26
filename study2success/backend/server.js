@@ -190,8 +190,15 @@ app.get("/api/dashboard-data", isAuth, (req, res) => {
 });
 
 // ALL SCHEDULE endpoint for dashboard.js
-app.get("/api/all-schedule", isAuth, (req, res) => {
+app.get("/api/dashboard-data", isAuth, (req, res) => {
   Promise.all([
+    new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM subjects WHERE user_id = ?",
+        [req.session.user.id],
+        (err, results) => (err ? reject(err) : resolve(results))
+      );
+    }),
     new Promise((resolve, reject) => {
       db.query(
         "SELECT tasks.*, subjects.name AS subject FROM tasks JOIN subjects ON tasks.subject_id = subjects.id WHERE tasks.user_id = ? ORDER BY tasks.due_date ASC",
@@ -205,15 +212,23 @@ app.get("/api/all-schedule", isAuth, (req, res) => {
         [req.session.user.id],
         (err, results) => (err ? reject(err) : resolve(results))
       );
+    }),
+    new Promise((resolve, reject) => {
+      db.query(
+        "SELECT SUM(duration) AS totalStudySeconds FROM study_sessions WHERE user_id = ?",
+        [req.session.user.id],
+        (err, results) => (err ? reject(err) : resolve(results[0].totalStudySeconds || 0))
+      );
     })
   ])
-    .then(([tasks, exams]) => res.json({ tasks, exams }))
+    .then(([subjects, tasks, exams, totalStudySeconds]) => {
+      res.json({ subjects, tasks, exams, totalStudySeconds });
+    })
     .catch(err => {
       console.error(err);
-      res.json({ tasks: [], exams: [] });
+      res.json({ subjects: [], tasks: [], exams: [], totalStudySeconds: 0 });
     });
 });
-
 /* =====================================================
    SUBJECT ROUTES
 ===================================================== */
