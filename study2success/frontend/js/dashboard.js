@@ -15,7 +15,7 @@ function formatDate(isoString) {
 }
 
 /* ==============================
-   LOAD DASHBOARD
+   LOAD DASHBOARD DATA
 ============================== */
 async function loadDashboard() {
   try {
@@ -39,17 +39,6 @@ async function loadDashboard() {
     const today = new Date();
     const upcoming = exams.filter(e => new Date(e.exam_date) >= today);
     document.getElementById("upcomingExams").textContent = upcoming.length;
-
-    // Optional upcoming exams list
-    const upcomingExamsList = document.getElementById("upcomingExamsList");
-    if (upcomingExamsList) {
-      upcomingExamsList.innerHTML = "";
-      upcoming.forEach(exam => {
-        const li = document.createElement("li");
-        li.textContent = `📅 ${formatDate(exam.exam_date)} - ${exam.subject}`;
-        upcomingExamsList.appendChild(li);
-      });
-    }
 
   } catch (err) {
     console.error("Error loading dashboard:", err);
@@ -93,6 +82,73 @@ async function loadTodayTasks() {
 }
 
 /* ==============================
+   ALL TASKS & EXAMS
+============================== */
+async function loadAllSchedule() {
+  const list = document.getElementById("allSchedule");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  try {
+    // Fetch tasks
+    const tasksRes = await fetch("/api/schedule", { credentials: "include" });
+    const tasks = await tasksRes.json();
+
+    // Fetch exams
+    const examsRes = await fetch("/exams", { credentials: "include" });
+    const exams = await examsRes.json();
+
+    const combined = [];
+
+    // Format tasks
+    tasks.forEach(task => {
+      combined.push({
+        type: "task",
+        title: task.title,
+        subject: task.subject,
+        date: task.due_date,
+        completed: task.completed
+      });
+    });
+
+    // Format exams
+    exams.forEach(exam => {
+      combined.push({
+        type: "exam",
+        title: exam.subject,
+        date: exam.exam_date,
+        time: exam.exam_time || "",
+        location: exam.location || ""
+      });
+    });
+
+    // Sort by date ascending
+    combined.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    if (combined.length === 0) {
+      list.innerHTML = "<li>No tasks or exams available</li>";
+      return;
+    }
+
+    combined.forEach(item => {
+      const li = document.createElement("li");
+      if (item.type === "task") {
+        li.textContent = `📝 ${item.title} (${item.subject}) - Due: ${formatDate(item.date)}`;
+        if (item.completed) li.classList.add("completed");
+      } else {
+        li.textContent = `📅 ${item.title} - Exam: ${formatDate(item.date)} ${item.time ? "- " + item.time : ""} ${item.location ? "- " + item.location : ""}`;
+      }
+      list.appendChild(li);
+    });
+
+  } catch (err) {
+    console.error("Error loading all schedule:", err);
+    list.innerHTML = "<li>Error loading tasks and exams</li>";
+  }
+}
+
+/* ==============================
    DEADLINE ALERT
 ============================== */
 async function checkDeadlines() {
@@ -127,10 +183,64 @@ async function checkDeadlines() {
 }
 
 /* ==============================
+   STUDY TIMER
+============================== */
+let studyInterval = null;
+let studySeconds = 0;
+
+function updateTimerDisplay() {
+  const h = String(Math.floor(studySeconds / 3600)).padStart(2, "0");
+  const m = String(Math.floor((studySeconds % 3600) / 60)).padStart(2, "0");
+  const s = String(studySeconds % 60).padStart(2, "0");
+  document.getElementById("timerDisplay").textContent = `${h}:${m}:${s}`;
+}
+
+document.getElementById("startStudy")?.addEventListener("click", () => {
+  if (studyInterval) return;
+  studyInterval = setInterval(() => {
+    studySeconds++;
+    updateTimerDisplay();
+  }, 1000);
+});
+
+document.getElementById("stopStudy")?.addEventListener("click", () => {
+  clearInterval(studyInterval);
+  studyInterval = null;
+
+  // Save session to backend
+  fetch("/study-session", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ duration: studySeconds }),
+    credentials: "include"
+  }).then(res => res.json())
+    .then(data => console.log("Study session saved:", data))
+    .catch(err => console.error(err));
+
+  studySeconds = 0;
+  updateTimerDisplay();
+});
+
+/* ==============================
+   THEME TOGGLE
+============================== */
+document.getElementById("themeToggle")?.addEventListener("click", () => {
+  document.getElementById("body").classList.toggle("dark-mode");
+});
+
+/* ==============================
+   LOGOUT
+============================== */
+function logout() {
+  fetch("/logout").then(() => window.location.href = "/login.html");
+}
+
+/* ==============================
    INIT
 ============================== */
 document.addEventListener("DOMContentLoaded", () => {
   loadDashboard();
   loadTodayTasks();
+  loadAllSchedule();
   checkDeadlines();
 });
