@@ -6,6 +6,8 @@ const mainProgressBar = document.getElementById("mainProgressBar");
 const moduleCountEl = document.getElementById("moduleCount");
 const summaryCountEl = document.getElementById("summaryCount");
 const moduleProgressEl = document.getElementById("moduleProgress");
+
+// Optional: Add these elements in HTML or comment out
 const studyHoursEl = document.getElementById("studyHours");
 const streakDaysEl = document.getElementById("streakDays");
 
@@ -48,7 +50,9 @@ async function loadUser() {
 async function getTasks() {
   try {
     const res = await fetch("/schedule", { credentials: "include" });
-    return await res.json();
+    const data = await res.json();
+    console.log("Tasks loaded:", data); // debug
+    return data;
   } catch (err) {
     console.error("Task fetch error:", err);
     return [];
@@ -59,17 +63,20 @@ async function getTasks() {
 async function updateProgress() {
   const tasks = await getTasks();
   const total = tasks.length;
-  const completed = tasks.filter(t => t.completed == 1).length;
+
+  // Convert completed to number in case MySQL returns string
+  const completed = tasks.filter(t => Number(t.completed) === 1).length;
+
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
 
+  // Update UI
   progressPercentEl.textContent = percent + "%";
   mainProgressBar.style.width = percent + "%";
   moduleCountEl.textContent = `${completed} / ${total}`;
   summaryCountEl.textContent = `${completed} of ${total} modules`;
   moduleProgressEl.style.width = percent + "%";
 
-  // Optional: show study hours and streak based on tasks
-  if (studyHoursEl) studyHoursEl.textContent = `${total * 2} hrs studied`; // assume 2 hrs per task
+  if (studyHoursEl) studyHoursEl.textContent = `${total * 2} hrs studied`; // example
   if (streakDaysEl) streakDaysEl.textContent = `${completed} Days streak`;
 
   const successBox = document.querySelector(".success-box");
