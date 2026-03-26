@@ -6,8 +6,6 @@ const mainProgressBar = document.getElementById("mainProgressBar");
 const moduleCountEl = document.getElementById("moduleCount");
 const summaryCountEl = document.getElementById("summaryCount");
 const moduleProgressEl = document.getElementById("moduleProgress");
-
-// Optional: Add these elements in HTML or comment out
 const studyHoursEl = document.getElementById("studyHours");
 const streakDaysEl = document.getElementById("streakDays");
 
@@ -70,8 +68,9 @@ async function updateProgress() {
   summaryCountEl.textContent = `${completed} of ${total} modules`;
   moduleProgressEl.style.width = percent + "%";
 
-  if (studyHoursEl) studyHoursEl.textContent = `${total} hrs`;
-  if (streakDaysEl) streakDaysEl.textContent = `${completed} Days`;
+  // Optional: show study hours and streak based on tasks
+  if (studyHoursEl) studyHoursEl.textContent = `${total * 2} hrs studied`; // assume 2 hrs per task
+  if (streakDaysEl) streakDaysEl.textContent = `${completed} Days streak`;
 
   const successBox = document.querySelector(".success-box");
   if (successBox) {
