@@ -7,7 +7,6 @@ const moduleCountEl = document.getElementById("moduleCount");
 const summaryCountEl = document.getElementById("summaryCount");
 const moduleProgressEl = document.getElementById("moduleProgress");
 
-// Optional: Add these elements in HTML or comment out
 const studyHoursEl = document.getElementById("studyHours");
 const streakDaysEl = document.getElementById("streakDays");
 
@@ -49,10 +48,9 @@ async function loadUser() {
 /* ===== FETCH TASKS ===== */
 async function getTasks() {
   try {
-    const res = await fetch("/schedule", { credentials: "include" });
+    const res = await fetch("/api/dashboard-data", { credentials: "include" });
     const data = await res.json();
-    console.log("Tasks loaded:", data); // debug
-    return data;
+    return data.tasks || [];
   } catch (err) {
     console.error("Task fetch error:", err);
     return [];
@@ -63,22 +61,23 @@ async function getTasks() {
 async function updateProgress() {
   const tasks = await getTasks();
   const total = tasks.length;
-
-  // Convert completed to number in case MySQL returns string
   const completed = tasks.filter(t => Number(t.completed) === 1).length;
-
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
 
-  // Update UI
+  // Update main progress
   progressPercentEl.textContent = percent + "%";
   mainProgressBar.style.width = percent + "%";
+
+  // Update module stats
   moduleCountEl.textContent = `${completed} / ${total}`;
   summaryCountEl.textContent = `${completed} of ${total} modules`;
   moduleProgressEl.style.width = percent + "%";
 
-  if (studyHoursEl) studyHoursEl.textContent = `${total * 2} hrs studied`; // example
-  if (streakDaysEl) streakDaysEl.textContent = `${completed} Days streak`;
+  // Optional: Study hours & streak
+  if (studyHoursEl) studyHoursEl.textContent = `${total} hrs studied`;
+  if (streakDaysEl) streakDaysEl.textContent = `${completed} Days`;
 
+  // Highlight success box
   const successBox = document.querySelector(".success-box");
   if (successBox) {
     successBox.style.borderLeft =
