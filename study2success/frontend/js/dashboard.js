@@ -1,7 +1,3 @@
-/* =====================================================
-   DASHBOARD.JS
-===================================================== */
-
 /* ==============================
    HELPER FUNCTIONS
 ============================== */
@@ -22,14 +18,14 @@ let studyInterval = null;
 let studySeconds = 0;
 
 /* ==============================
-   LOAD DASHBOARD DATA
+   LOAD DASHBOARD
 ============================== */
 async function loadDashboard() {
   try {
     const res = await fetch("/api/dashboard-data", { credentials: "include" });
     dashboardData = await res.json();
 
-    const { subjects, tasks, exams } = dashboardData;
+    const { subjects, tasks, exams, totalStudySeconds = 0 } = dashboardData;
 
     document.getElementById("totalSubjects").textContent = subjects.length;
     document.getElementById("totalTasks").textContent = tasks.length;
@@ -41,10 +37,9 @@ async function loadDashboard() {
     document.getElementById("progressBar").style.width = percent + "%";
     document.getElementById("progressPercent").textContent = percent + "%";
 
-    const totalSeconds = dashboardData.totalStudySeconds || 0;
-    const h = Math.floor(totalSeconds / 3600);
-    const m = Math.floor((totalSeconds % 3600) / 60);
-    const s = totalSeconds % 60;
+    const h = Math.floor(totalStudySeconds / 3600);
+    const m = Math.floor((totalStudySeconds % 3600) / 60);
+    const s = totalStudySeconds % 60;
     document.getElementById("studyTime").textContent = `${h}h ${m}m ${s}s`;
 
     const today = new Date();
@@ -59,110 +54,86 @@ async function loadDashboard() {
 /* ==============================
    TODAY TASKS
 ============================== */
-async function loadTodayTasks() {
+function loadTodayTasks() {
   const list = document.getElementById("todayTasks");
-  if (!list) return;
+  if (!list || !dashboardData) return;
+
   list.innerHTML = "";
 
-  try {
-    const res = await fetch("/api/all-schedule", { credentials: "include" });
-    const { tasks } = await res.json();
+  const today = new Date();
+  const todayStr = today.toISOString().split("T")[0];
 
-    const today = new Date();
-    const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  const todayTasks = dashboardData.tasks.filter(t => t.due_date === todayStr);
 
-    const todayTasks = tasks.filter(t => t.due_date === todayStr);
-
-    if (!todayTasks.length) {
-      list.innerHTML = "<li>No tasks for today</li>";
-      return;
-    }
-
-    todayTasks.forEach(task => {
-      const li = document.createElement("li");
-      li.textContent = `${task.title} (${task.subject})`;
-      if (task.completed) li.classList.add("completed");
-      list.appendChild(li);
-    });
-
-  } catch (err) {
-    console.error("Error loading today tasks:", err);
-    list.innerHTML = "<li>Error loading tasks</li>";
+  if (!todayTasks.length) {
+    list.innerHTML = "<li>No tasks for today</li>";
+    return;
   }
+
+  todayTasks.forEach(task => {
+    const li = document.createElement("li");
+    li.textContent = `${task.title} (${task.subject})`;
+    if (task.completed) li.classList.add("completed");
+    list.appendChild(li);
+  });
 }
 
 /* ==============================
    ALL TASKS & EXAMS
 ============================== */
-async function loadAllSchedule() {
+function loadAllSchedule() {
   const list = document.getElementById("allSchedule");
-  if (!list) return;
+  if (!list || !dashboardData) return;
+
   list.innerHTML = "";
 
-  try {
-    const res = await fetch("/api/all-schedule", { credentials: "include" });
-    const { tasks, exams } = await res.json();
+  const combined = [
+    ...dashboardData.tasks.map(t => ({ type: "task", ...t })),
+    ...dashboardData.exams.map(e => ({ type: "exam", title: e.subject, ...e }))
+  ];
 
-    const combined = [
-      ...tasks.map(t => ({ type: "task", ...t })),
-      ...exams.map(e => ({ type: "exam", title: e.subject, ...e }))
-    ];
+  combined.sort((a, b) => new Date(a.date || a.due_date) - new Date(b.date || b.due_date));
 
-    combined.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-    if (!combined.length) {
-      list.innerHTML = "<li>No tasks or exams available</li>";
-      return;
-    }
-
-    combined.forEach(item => {
-      const li = document.createElement("li");
-      if (item.type === "task") {
-        li.textContent = `📝 ${item.title} (${item.subject}) - Due: ${formatDate(item.date)}`;
-        if (item.completed) li.classList.add("completed");
-      } else {
-        li.textContent = `📅 ${item.title} - Exam: ${formatDate(item.date)} ${item.time ? "- " + item.time : ""} ${item.location ? "- " + item.location : ""}`;
-      }
-      list.appendChild(li);
-    });
-
-  } catch (err) {
-    console.error("Error loading all schedule:", err);
-    list.innerHTML = "<li>Error loading tasks and exams</li>";
+  if (!combined.length) {
+    list.innerHTML = "<li>No tasks or exams available</li>";
+    return;
   }
+
+  combined.forEach(item => {
+    const li = document.createElement("li");
+    if (item.type === "task") {
+      li.textContent = `📝 ${item.title} (${item.subject}) - Due: ${formatDate(item.due_date)}`;
+      if (item.completed) li.classList.add("completed");
+    } else {
+      li.textContent = `📅 ${item.title} - Exam: ${formatDate(item.exam_date)} ${item.exam_time ? "- " + item.exam_time : ""} ${item.location ? "- " + item.location : ""}`;
+    }
+    list.appendChild(li);
+  });
 }
 
 /* ==============================
    DEADLINE ALERT
 ============================== */
-async function checkDeadlines() {
+function checkDeadlines() {
   const alertBox = document.getElementById("deadlineAlert");
-  if (!alertBox) return;
+  if (!alertBox || !dashboardData) return;
 
-  try {
-    const res = await fetch("/api/all-schedule", { credentials: "include" });
-    const tasks = (await res.json()).tasks;
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
 
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(today.getDate() + 1);
+  const todayStr = today.toISOString().split("T")[0];
+  const tomorrowStr = tomorrow.toISOString().split("T")[0];
 
-    const todayStr = today.toISOString().split("T")[0];
-    const tomorrowStr = tomorrow.toISOString().split("T")[0];
+  const urgent = dashboardData.tasks.find(t => !t.completed && (t.due_date === todayStr || t.due_date === tomorrowStr));
 
-    const urgent = tasks.find(t => !t.completed && (t.due_date === todayStr || t.due_date === tomorrowStr));
-
-    if (urgent) {
-      alertBox.style.display = "block";
-      alertBox.innerText = urgent.due_date === todayStr
-        ? `⚠ ${urgent.title} is due TODAY!`
-        : `⚠ ${urgent.title} is due tomorrow!`;
-    } else {
-      alertBox.style.display = "none";
-    }
-
-  } catch (err) {
-    console.error("Error checking deadlines:", err);
+  if (urgent) {
+    alertBox.style.display = "block";
+    alertBox.innerText = urgent.due_date === todayStr
+      ? `⚠ ${urgent.title} is due TODAY!`
+      : `⚠ ${urgent.title} is due tomorrow!`;
+  } else {
+    alertBox.style.display = "none";
   }
 }
 
@@ -194,7 +165,7 @@ document.getElementById("stopStudy")?.addEventListener("click", () => {
     body: JSON.stringify({ duration: studySeconds }),
     credentials: "include"
   }).then(res => res.json())
-    .then(data => console.log("Study session saved:", data))
+    .then(() => console.log("Study session saved"))
     .catch(err => console.error(err));
 
   studySeconds = 0;
@@ -207,12 +178,10 @@ document.getElementById("stopStudy")?.addEventListener("click", () => {
 document.getElementById("saveTaskBtn")?.addEventListener("click", async () => {
   const taskInput = document.getElementById("newTaskInput");
   const title = taskInput.value.trim();
-  if (!title) return;
+  if (!title || !dashboardData.subjects.length) return alert("Add a subject first!");
 
-  const subjectId = dashboardData.subjects.length ? dashboardData.subjects[0].id : null;
+  const subjectId = dashboardData.subjects[0].id;
   const todayStr = new Date().toISOString().split("T")[0];
-
-  if (!subjectId) return alert("Add a subject first!");
 
   try {
     const res = await fetch("/tasks", {
@@ -226,10 +195,9 @@ document.getElementById("saveTaskBtn")?.addEventListener("click", async () => {
     if (data.success) {
       taskInput.value = "";
       const modalEl = document.getElementById("addTaskModal");
-      const modal = bootstrap.Modal.getInstance(modalEl);
-      modal.hide();
+      bootstrap.Modal.getInstance(modalEl).hide();
 
-      loadDashboard();
+      await loadDashboard();
       loadTodayTasks();
       loadAllSchedule();
       checkDeadlines();
@@ -259,8 +227,7 @@ document.getElementById("viewStatsBtn")?.addEventListener("click", () => {
   `;
 
   const modalEl = document.getElementById("viewStatsModal");
-  const modal = new bootstrap.Modal(modalEl);
-  modal.show();
+  new bootstrap.Modal(modalEl).show();
 });
 
 /* ==============================
@@ -280,8 +247,8 @@ function logout() {
 /* ==============================
    INIT
 ============================== */
-document.addEventListener("DOMContentLoaded", () => {
-  loadDashboard();
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadDashboard();
   loadTodayTasks();
   loadAllSchedule();
   checkDeadlines();
