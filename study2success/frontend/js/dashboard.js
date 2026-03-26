@@ -36,6 +36,12 @@ async function loadDashboard() {
     document.getElementById("progressBar").style.width = percent + "%";
     document.getElementById("progressPercent").textContent = percent + "%";
 
+    const totalSeconds = data.totalStudySeconds || 0;
+    const h = Math.floor(totalSeconds / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const s = totalSeconds % 60;
+    document.getElementById("studyTime").textContent = `${h}h ${m}m ${s}s`;
+
     const today = new Date();
     const upcoming = exams.filter(e => new Date(e.exam_date) >= today);
     document.getElementById("upcomingExams").textContent = upcoming.length;
@@ -55,8 +61,9 @@ async function loadTodayTasks() {
   list.innerHTML = "";
 
   try {
-    const res = await fetch("/api/schedule", { credentials: "include" });
-    const tasks = await res.json();
+    const res = await fetch("/api/all-schedule", { credentials: "include" });
+    const data = await res.json();
+    const tasks = data.tasks;
 
     const now = new Date();
     const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
@@ -91,17 +98,13 @@ async function loadAllSchedule() {
   list.innerHTML = "";
 
   try {
-    // Fetch tasks
-    const tasksRes = await fetch("/api/schedule", { credentials: "include" });
-    const tasks = await tasksRes.json();
-
-    // Fetch exams
-    const examsRes = await fetch("/exams", { credentials: "include" });
-    const exams = await examsRes.json();
+    const res = await fetch("/api/all-schedule", { credentials: "include" });
+    const data = await res.json();
+    const tasks = data.tasks;
+    const exams = data.exams;
 
     const combined = [];
 
-    // Format tasks
     tasks.forEach(task => {
       combined.push({
         type: "task",
@@ -112,7 +115,6 @@ async function loadAllSchedule() {
       });
     });
 
-    // Format exams
     exams.forEach(exam => {
       combined.push({
         type: "exam",
@@ -123,7 +125,6 @@ async function loadAllSchedule() {
       });
     });
 
-    // Sort by date ascending
     combined.sort((a, b) => new Date(a.date) - new Date(b.date));
 
     if (combined.length === 0) {
@@ -156,8 +157,8 @@ async function checkDeadlines() {
   if (!alertBox) return;
 
   try {
-    const res = await fetch("/api/schedule", { credentials: "include" });
-    const tasks = await res.json();
+    const res = await fetch("/api/all-schedule", { credentials: "include" });
+    const tasks = (await res.json()).tasks;
 
     const today = new Date();
     const tomorrow = new Date();
@@ -207,7 +208,6 @@ document.getElementById("stopStudy")?.addEventListener("click", () => {
   clearInterval(studyInterval);
   studyInterval = null;
 
-  // Save session to backend
   fetch("/study-session", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
