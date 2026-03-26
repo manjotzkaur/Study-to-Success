@@ -14,19 +14,15 @@ async function loadUser() {
   try {
     const res = await fetch("/profile", { credentials: "include" });
     const user = await res.json();
-
     if (!user || !user.username) return;
 
     document.getElementById("studentName").textContent = user.username;
-
     const initials = user.username
       .split(" ")
       .map(n => n[0])
       .join("")
       .toUpperCase();
-
     document.querySelector(".avatar").textContent = initials;
-
   } catch (err) {
     console.error("User load error:", err);
   }
@@ -37,19 +33,16 @@ async function loadUser() {
 ============================== */
 
 async function loadEvents() {
-
-  renderCalendar(); // initial render
-
   try {
+    const [taskRes, examRes] = await Promise.all([
+      fetch("/schedule", { credentials: "include" }),
+      fetch("/exams", { credentials: "include" }),
+    ]);
 
-    const taskRes = await fetch("/schedule", { credentials: "include" });
     tasks = await taskRes.json();
-
-    const examRes = await fetch("/exams", { credentials: "include" });
     exams = await examRes.json();
 
-    renderCalendar(); // re-render after data
-
+    renderCalendar(); // render after data loaded
   } catch (err) {
     console.error("Error loading events:", err);
   }
@@ -60,7 +53,6 @@ async function loadEvents() {
 ============================== */
 
 function renderCalendar() {
-
   const calendarDays = document.getElementById("calendarDays");
   const calendarTitle = document.getElementById("calendarTitle");
 
@@ -69,29 +61,27 @@ function renderCalendar() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
-  calendarTitle.textContent = currentDate.toLocaleDateString("en-US", {
+  calendarTitle.textContent = currentDate.toLocaleString("default", {
     month: "long",
-    year: "numeric"
+    year: "numeric",
   });
 
   const firstDay = new Date(year, month, 1).getDay();
   const totalDays = new Date(year, month + 1, 0).getDate();
 
-  /* Empty slots */
+  // Empty slots for previous month
   for (let i = 0; i < firstDay; i++) {
     const empty = document.createElement("div");
     empty.className = "day-box muted";
     calendarDays.appendChild(empty);
   }
 
-  /* Days */
+  // Days
   for (let day = 1; day <= totalDays; day++) {
-
     const box = document.createElement("div");
     box.className = "day-box";
 
     const today = new Date();
-
     if (
       day === today.getDate() &&
       month === today.getMonth() &&
@@ -100,33 +90,32 @@ function renderCalendar() {
       box.classList.add("today");
     }
 
-    const dateStr =
-      `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(
+      day
+    ).padStart(2, "0")}`;
 
     box.innerHTML = `<strong>${day}</strong>`;
 
-    /* =========================
-       TASK EVENTS
-    ========================= */
-
-    tasks.forEach(task => {
-      if (task.due_date && task.due_date.split("T")[0] === dateStr) {
+    // TASKS
+    tasks.forEach((task) => {
+      // Normalize date: support "YYYY-MM-DD" or ISO
+      const taskDate = task.due_date.split("T")[0] || task.due_date;
+      if (taskDate === dateStr) {
         const e = document.createElement("div");
         e.className = "event task";
-        e.innerHTML = `📚 ${task.title}`;
+        if (task.completed) e.classList.add("completed");
+        e.textContent = `📚 ${task.title}`;
         box.appendChild(e);
       }
     });
 
-    /* =========================
-       EXAM EVENTS
-    ========================= */
-
-    exams.forEach(exam => {
-      if (exam.exam_date && exam.exam_date.split("T")[0] === dateStr) {
+    // EXAMS
+    exams.forEach((exam) => {
+      const examDate = exam.exam_date.split("T")[0] || exam.exam_date;
+      if (examDate === dateStr) {
         const e = document.createElement("div");
         e.className = "event exam";
-        e.innerHTML = `📝 ${exam.subject}`;
+        e.textContent = `📝 ${exam.subject}`;
         box.appendChild(e);
       }
     });
