@@ -6,6 +6,8 @@ const mainProgressBar = document.getElementById("mainProgressBar");
 const moduleCountEl = document.getElementById("moduleCount");
 const summaryCountEl = document.getElementById("summaryCount");
 const moduleProgressEl = document.getElementById("moduleProgress");
+
+// Optional: Add these elements in HTML or comment out
 const studyHoursEl = document.getElementById("studyHours");
 const streakDaysEl = document.getElementById("streakDays");
 
@@ -20,10 +22,8 @@ if (localStorage.getItem("darkMode") === "true") {
 if (toggleBtn) {
   toggleBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
-
     const isDark = document.body.classList.contains("dark-mode");
     toggleBtn.textContent = isDark ? "☀️" : "🌙";
-
     localStorage.setItem("darkMode", isDark);
   });
 }
@@ -33,17 +33,14 @@ async function loadUser() {
   try {
     const res = await fetch("/profile", { credentials: "include" });
     const user = await res.json();
-
     if (user && user.username) {
       userNameEl.textContent = user.username;
-
       avatarEl.textContent = user.username
         .split(" ")
         .map(w => w[0])
         .join("")
         .toUpperCase();
     }
-
   } catch (err) {
     console.error("User load error:", err);
   }
@@ -63,28 +60,19 @@ async function getTasks() {
 /* ===== UPDATE PROGRESS ===== */
 async function updateProgress() {
   const tasks = await getTasks();
-
   const total = tasks.length;
-
-  // ✅ IMPORTANT FIX (MySQL returns 0/1)
   const completed = tasks.filter(t => t.completed == 1).length;
-
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
 
-  /* ===== UI UPDATE ===== */
   progressPercentEl.textContent = percent + "%";
   mainProgressBar.style.width = percent + "%";
-
   moduleCountEl.textContent = `${completed} / ${total}`;
   summaryCountEl.textContent = `${completed} of ${total} modules`;
-
   moduleProgressEl.style.width = percent + "%";
 
-  /* ===== SIMPLE LOGIC ===== */
-  studyHoursEl.textContent = `${total} hrs`;
-  streakDaysEl.textContent = `${completed} Days`;
+  if (studyHoursEl) studyHoursEl.textContent = `${total} hrs`;
+  if (streakDaysEl) streakDaysEl.textContent = `${completed} Days`;
 
-  /* ===== SUCCESS COLOR ===== */
   const successBox = document.querySelector(".success-box");
   if (successBox) {
     successBox.style.borderLeft =
