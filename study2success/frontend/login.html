@@ -36,18 +36,19 @@
       <h2>Login</h2>
       <p>Access your study planner</p>
 
-      <form id="loginForm">
+      <form id="loginForm" autocomplete="off">
+        <!-- Hidden dummy fields to prevent autofill -->
+        <input type="text" name="fakeusernameremembered" style="display:none">
+        <input type="password" name="fakepasswordremembered" style="display:none">
 
-        <input type="email" id="email" placeholder="Email" required>
+        <input type="email" id="email" placeholder="Email" autocomplete="off" required>
 
         <div class="input-group">
-          <input type="password" id="password" placeholder="Password" required>
+          <input type="password" id="password" placeholder="Password" autocomplete="new-password" required>
           <i class="bi bi-eye toggle-password" id="togglePassword"></i>
         </div>
 
-
         <button type="submit" id="loginBtn">Login</button>
-
       </form>
 
       <div class="links">
