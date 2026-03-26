@@ -11,156 +11,135 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="css/theme.css">
 <style>
-
 body{
-background:linear-gradient(120deg,#e0e7ff,#ffffff);
-font-family:"Segoe UI",sans-serif;
+  background: linear-gradient(120deg,#e0e7ff,#ffffff);
+  font-family: "Segoe UI", sans-serif;
 }
 
 .sidebar{
-background:linear-gradient(180deg,#2563eb,#1e40af);
-color:white;
-box-shadow:4px 0 15px rgba(0,0,0,0.1);
+  background: linear-gradient(180deg,#2563eb,#1e40af);
+  color: white;
+  box-shadow: 4px 0 15px rgba(0,0,0,0.1);
 }
 
 .sidebar .nav-link{
-color:rgba(255,255,255,0.75);
-padding:10px 14px;
-border-radius:8px;
-margin-bottom:6px;
-transition:.3s;
+  color: rgba(255,255,255,0.75);
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  transition: .3s;
 }
 
 .sidebar .nav-link:hover,
 .sidebar .nav-link.active{
-background:rgba(255,255,255,0.15);
-color:white;
-transform:translateX(5px);
+  background: rgba(255,255,255,0.15);
+  color: white;
+  transform: translateX(5px);
 }
 
 .stat-card{
-border-left:5px solid #0d6efd;
+  border-left: 5px solid #0d6efd;
 }
-
 </style>
 </head>
 
 <body>
 
 <div class="container-fluid">
-<div class="row min-vh-100">
+  <div class="row min-vh-100">
 
-<!-- Sidebar -->
+    <!-- Sidebar -->
+    <aside class="col-md-3 col-lg-2 sidebar p-4">
+      <h4>Study to Success</h4>
+      <p class="small">Smart Study Planner</p>
 
-<aside class="col-md-3 col-lg-2 sidebar p-4">
+      <ul class="nav flex-column mt-4">
+        <li><a class="nav-link" href="dashboard.html">Dashboard</a></li>
+        <li><a class="nav-link" href="task.html">Tasks</a></li>
+        <li><a class="nav-link active" href="analytics.html">Analytics</a></li>
+        <li><a class="nav-link" href="settings.html">Settings</a></li>
+      </ul>
+    </aside>
 
-<h4>Study to Success</h4>
-<p class="small">Smart Study Planner</p>
+    <!-- Main -->
+    <main class="col-md-9 col-lg-10 p-5">
+      <h2>Study Analytics</h2>
+      <p class="text-muted mb-4">Overview of your study progress</p>
 
-<ul class="nav flex-column mt-4">
-<li><a class="nav-link" href="dashboard.html">Dashboard</a></li>
-<li><a class="nav-link" href="task.html">Tasks</a></li>
+      <!-- Stats Cards -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-4">
+          <div class="card stat-card p-3 shadow-sm">
+            <h6>Total Tasks</h6>
+            <h3 id="totalTasks">0</h3>
+          </div>
+        </div>
 
-<li><a class="nav-link active" href="analytics.html">Analytics</a></li>
-<li><a class="nav-link" href="settings.html">Settings</a></li>
-</ul>
+        <div class="col-md-4">
+          <div class="card stat-card p-3 shadow-sm">
+            <h6>Completed</h6>
+            <h3 id="completedTasks">0</h3>
+          </div>
+        </div>
 
-</aside>
+        <div class="col-md-4">
+          <div class="card stat-card p-3 shadow-sm">
+            <h6>Pending</h6>
+            <h3 id="pendingTasks">0</h3>
+          </div>
+        </div>
+      </div>
 
-<!-- Main -->
+      <!-- Progress Bar -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <h5>Overall Progress</h5>
+          <div class="progress mt-3">
+            <div class="progress-bar bg-success" id="progressBar" style="width:0%"></div>
+          </div>
+          <p class="mt-2 text-muted" id="progressText"></p>
+        </div>
+      </div>
 
-<main class="col-md-9 col-lg-10 p-5">
+      <!-- Charts -->
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card p-3 shadow-sm">
+            <h6 class="mb-3">Completed vs Pending</h6>
+            <canvas id="taskChart"></canvas>
+          </div>
+        </div>
 
-<h2>Study Analytics</h2>
-<p class="text-muted mb-4">Overview of your study progress</p>
+        <div class="col-md-6">
+          <div class="card p-3 shadow-sm">
+            <h6 class="mb-3">Tasks by Subject</h6>
+            <canvas id="subjectChart"></canvas>
+          </div>
+        </div>
+      </div>
 
-<!-- Stats Cards -->
-
-<div class="row g-4 mb-4">
-
-<div class="col-md-4">
-<div class="card stat-card p-3 shadow-sm">
-<h6>Total Tasks</h6>
-<h3 id="totalTasks">0</h3>
-</div>
-</div>
-
-<div class="col-md-4">
-<div class="card stat-card p-3 shadow-sm">
-<h6>Completed</h6>
-<h3 id="completedTasks">0</h3>
-</div>
-</div>
-
-<div class="col-md-4">
-<div class="card stat-card p-3 shadow-sm">
-<h6>Pending</h6>
-<h3 id="pendingTasks">0</h3>
-</div>
-</div>
-
-</div>
-
-<!-- Progress Bar -->
-
-<div class="card shadow-sm mb-4">
-<div class="card-body">
-
-<h5>Overall Progress</h5>
-
-<div class="progress mt-3">
-<div class="progress-bar bg-success" id="progressBar" style="width:0%"></div>
-</div>
-
-<p class="mt-2 text-muted" id="progressText"></p>
-
-</div>
-</div>
-
-<!-- Charts -->
-
-<div class="row g-4">
-
-<div class="col-md-6">
-<div class="card p-3 shadow-sm">
-<h6 class="mb-3">Completed vs Pending</h6>
-<canvas id="taskChart"></canvas>
-</div>
+    </main>
+  </div>
 </div>
 
-<div class="col-md-6">
-<div class="card p-3 shadow-sm">
-<h6 class="mb-3">Tasks by Subject</h6>
-<canvas id="subjectChart"></canvas>
-</div>
-</div>
-
-</div>
-
-</main>
-
-</div>
-</div>
 <script>
-
 let taskChartInstance;
 let subjectChartInstance;
 
 async function loadAnalytics(){
-
   try {
+    // Fetch dashboard data (same as dashboard page)
+    const res = await fetch("/api/dashboard-data", { credentials: "include" });
+    const data = await res.json();
+    const tasks = data.tasks;
 
-    const res = await fetch("/schedule", {
-      credentials: "include"
-    });
-
-    const tasks = await res.json();
-
+    // Stats calculation
     const total = tasks.length;
-    const completed = tasks.filter(t => t.completed === 1).length;
+    const completed = tasks.filter(t => t.completed).length;
     const pending = total - completed;
     const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
 
+    // Update stats cards
     document.getElementById("totalTasks").textContent = total;
     document.getElementById("completedTasks").textContent = completed;
     document.getElementById("pendingTasks").textContent = pending;
@@ -169,10 +148,8 @@ async function loadAnalytics(){
     document.getElementById("progressText").textContent =
       `You have completed ${percent}% of your tasks`;
 
-    /* ===== PIE CHART ===== */
-
-    if (taskChartInstance) taskChartInstance.destroy();
-
+    // Pie chart: Completed vs Pending
+    if(taskChartInstance) taskChartInstance.destroy();
     taskChartInstance = new Chart(document.getElementById("taskChart"), {
       type: "pie",
       data: {
@@ -184,19 +161,15 @@ async function loadAnalytics(){
       }
     });
 
-    /* ===== SUBJECT CHART ===== */
-
+    // Bar chart: Tasks by Subject
     const subjectCounts = {};
-
     tasks.forEach(task => {
-      if (!subjectCounts[task.subject]) {
-        subjectCounts[task.subject] = 0;
-      }
+      if(!task.subject) task.subject = "Unassigned";
+      if(!subjectCounts[task.subject]) subjectCounts[task.subject] = 0;
       subjectCounts[task.subject]++;
     });
 
-    if (subjectChartInstance) subjectChartInstance.destroy();
-
+    if(subjectChartInstance) subjectChartInstance.destroy();
     subjectChartInstance = new Chart(document.getElementById("subjectChart"), {
       type: "bar",
       data: {
@@ -206,23 +179,25 @@ async function loadAnalytics(){
           data: Object.values(subjectCounts),
           backgroundColor: "#3b82f6"
         }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } }
       }
     });
 
-  } catch (err) {
+  } catch(err) {
     console.error("Analytics error:", err);
   }
 }
 
-/* DARK MODE */
+// Dark mode support
 if(localStorage.getItem("darkMode") === "true"){
   document.body.classList.add("dark-mode");
 }
 
 window.onload = loadAnalytics;
-
 </script>
-
 
 </body>
 </html>
