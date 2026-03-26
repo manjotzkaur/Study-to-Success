@@ -15,18 +15,21 @@ function formatDate(isoString) {
 }
 
 /* ==============================
+   GLOBAL DATA
+============================== */
+let dashboardData = null;
+let studyInterval = null;
+let studySeconds = 0;
+
+/* ==============================
    LOAD DASHBOARD DATA
 ============================== */
-let dashboardData = null; // store latest data
-
 async function loadDashboard() {
   try {
     const res = await fetch("/api/dashboard-data", { credentials: "include" });
     dashboardData = await res.json();
 
-    const subjects = dashboardData.subjects;
-    const tasks = dashboardData.tasks;
-    const exams = dashboardData.exams;
+    const { subjects, tasks, exams } = dashboardData;
 
     document.getElementById("totalSubjects").textContent = subjects.length;
     document.getElementById("totalTasks").textContent = tasks.length;
@@ -63,15 +66,14 @@ async function loadTodayTasks() {
 
   try {
     const res = await fetch("/api/all-schedule", { credentials: "include" });
-    const data = await res.json();
-    const tasks = data.tasks;
+    const { tasks } = await res.json();
 
-    const now = new Date();
-    const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
 
     const todayTasks = tasks.filter(t => t.due_date === todayStr);
 
-    if (todayTasks.length === 0) {
+    if (!todayTasks.length) {
       list.innerHTML = "<li>No tasks for today</li>";
       return;
     }
@@ -99,35 +101,16 @@ async function loadAllSchedule() {
 
   try {
     const res = await fetch("/api/all-schedule", { credentials: "include" });
-    const data = await res.json();
-    const tasks = data.tasks;
-    const exams = data.exams;
+    const { tasks, exams } = await res.json();
 
-    const combined = [];
-
-    tasks.forEach(task => {
-      combined.push({
-        type: "task",
-        title: task.title,
-        subject: task.subject,
-        date: task.due_date,
-        completed: task.completed
-      });
-    });
-
-    exams.forEach(exam => {
-      combined.push({
-        type: "exam",
-        title: exam.subject,
-        date: exam.exam_date,
-        time: exam.exam_time || "",
-        location: exam.location || ""
-      });
-    });
+    const combined = [
+      ...tasks.map(t => ({ type: "task", ...t })),
+      ...exams.map(e => ({ type: "exam", title: e.subject, ...e }))
+    ];
 
     combined.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    if (combined.length === 0) {
+    if (!combined.length) {
       list.innerHTML = "<li>No tasks or exams available</li>";
       return;
     }
@@ -161,7 +144,7 @@ async function checkDeadlines() {
     const tasks = (await res.json()).tasks;
 
     const today = new Date();
-    const tomorrow = new Date();
+    const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
 
     const todayStr = today.toISOString().split("T")[0];
@@ -186,9 +169,6 @@ async function checkDeadlines() {
 /* ==============================
    STUDY TIMER
 ============================== */
-let studyInterval = null;
-let studySeconds = 0;
-
 function updateTimerDisplay() {
   const h = String(Math.floor(studySeconds / 3600)).padStart(2, "0");
   const m = String(Math.floor((studySeconds % 3600) / 60)).padStart(2, "0");
@@ -229,14 +209,10 @@ document.getElementById("saveTaskBtn")?.addEventListener("click", async () => {
   const title = taskInput.value.trim();
   if (!title) return;
 
-  // Use first subject by default if exists
   const subjectId = dashboardData.subjects.length ? dashboardData.subjects[0].id : null;
   const todayStr = new Date().toISOString().split("T")[0];
 
-  if (!subjectId) {
-    alert("Add a subject first!");
-    return;
-  }
+  if (!subjectId) return alert("Add a subject first!");
 
   try {
     const res = await fetch("/tasks", {
@@ -249,12 +225,10 @@ document.getElementById("saveTaskBtn")?.addEventListener("click", async () => {
     const data = await res.json();
     if (data.success) {
       taskInput.value = "";
-      // hide modal
       const modalEl = document.getElementById("addTaskModal");
       const modal = bootstrap.Modal.getInstance(modalEl);
       modal.hide();
 
-      // reload dashboard info
       loadDashboard();
       loadTodayTasks();
       loadAllSchedule();
@@ -270,13 +244,12 @@ document.getElementById("saveTaskBtn")?.addEventListener("click", async () => {
 ============================== */
 document.getElementById("viewStatsBtn")?.addEventListener("click", () => {
   if (!dashboardData) return;
-  const tasks = dashboardData.tasks;
-  const subjects = dashboardData.subjects;
+
+  const { tasks, subjects, totalStudySeconds = 0 } = dashboardData;
   const completedCount = tasks.filter(t => t.completed).length;
-  const totalSeconds = dashboardData.totalStudySeconds || 0;
-  const h = Math.floor(totalSeconds / 3600);
-  const m = Math.floor((totalSeconds % 3600) / 60);
-  const s = totalSeconds % 60;
+  const h = Math.floor(totalStudySeconds / 3600);
+  const m = Math.floor((totalStudySeconds % 3600) / 60);
+  const s = totalStudySeconds % 60;
 
   document.getElementById("statsText").innerHTML = `
     <strong>Total Subjects:</strong> ${subjects.length}<br>
@@ -284,6 +257,10 @@ document.getElementById("viewStatsBtn")?.addEventListener("click", () => {
     <strong>Completed Tasks:</strong> ${completedCount}<br>
     <strong>Study Time:</strong> ${h}h ${m}m ${s}s
   `;
+
+  const modalEl = document.getElementById("viewStatsModal");
+  const modal = new bootstrap.Modal(modalEl);
+  modal.show();
 });
 
 /* ==============================
