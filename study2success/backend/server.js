@@ -35,7 +35,14 @@ app.use(
    AUTH MIDDLEWARE
 ===================================================== */
 function isAuth(req, res, next) {
-  if (!req.session.user) return res.redirect("/login.html");
+  if (!req.session.user) {
+    // Only send JSON for API routes
+    if (req.path.startsWith("/exams") || req.path.startsWith("/tasks") || req.path.startsWith("/subjects") || req.path.startsWith("/study-session") || req.path.startsWith("/profile")) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    // For normal pages
+    return res.redirect("/login.html");
+  }
   next();
 }
 
