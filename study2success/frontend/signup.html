@@ -35,21 +35,23 @@
       <h2>Register</h2>
       <p>Create your study planner account</p>
 
-      <form id="registerForm">
+      <form id="registerForm" autocomplete="off">
+        <!-- Hidden dummy fields to prevent browser autofill -->
+        <input type="text" name="fakeusername" style="display:none">
+        <input type="password" name="fakepassword" style="display:none">
 
-        <input type="text" id="username" placeholder="Username" required>
+        <input type="text" id="username" placeholder="Username" autocomplete="off" required>
 
-        <input type="email" id="email" placeholder="Email" required>
+        <input type="email" id="email" placeholder="Email" autocomplete="off" required>
 
         <div class="input-group">
-          <input type="password" id="password" placeholder="Password (Length of 5)" required>
+          <input type="password" id="password" placeholder="Password (Length of 5)" autocomplete="new-password" required>
           <i class="bi bi-eye toggle-password" id="togglePassword"></i>
         </div>
 
         <p id="passwordMessage" class="password-msg"></p>
 
         <button type="submit">Register</button>
-
       </form>
 
       <div class="links">
@@ -71,17 +73,14 @@ const togglePassword = document.getElementById("togglePassword");
 /* PASSWORD VALIDATION */
 passwordInput.addEventListener("input", function () {
     const value = passwordInput.value;
-
     const regex = /^(?=(?:.*[A-Za-z]){2})(?=(?:.*\d){2})(?=(?:.*[^A-Za-z0-9]){1}).{5}$/;
 
     if (value.length === 0) {
         passwordMessage.textContent = "";
-    } 
-    else if (!regex.test(value)) {
+    } else if (!regex.test(value)) {
         passwordMessage.textContent = "Password must be 5 characters: 2 letters, 2 digits, 1 special character.";
         passwordMessage.style.color = "red";
-    } 
-    else {
+    } else {
         passwordMessage.textContent = "Password format is valid ✔";
         passwordMessage.style.color = "lightgreen";
     }
@@ -98,29 +97,25 @@ togglePassword.addEventListener("click", function () {
     }
 });
 
-/* REGISTER */
+/* REGISTER FORM */
 document.getElementById("registerForm").addEventListener("submit", async function(e) {
     e.preventDefault();
 
     const username = document.getElementById("username").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = passwordInput.value.trim();
-
     const regex = /^(?=(?:.*[A-Za-z]){2})(?=(?:.*\d){2})(?=(?:.*[^A-Za-z0-9]){1}).{5}$/;
 
-    // ✅ Check empty
     if (!username || !email || !password) {
         alert("Please fill all fields");
         return;
     }
 
-    // ✅ Email validation
     if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
         alert("Enter a valid email");
         return;
     }
 
-    // ✅ Enforce password rule
     if (!regex.test(password)) {
         alert("Password does not meet required format");
         return;
