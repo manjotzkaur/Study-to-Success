@@ -34,15 +34,25 @@ async function loadUser() {
 
 async function loadEvents() {
   try {
-    const [taskRes, examRes] = await Promise.all([
-      fetch("/schedule", { credentials: "include" }),
-      fetch("/exams", { credentials: "include" }),
-    ]);
+    // Get all subjects
+    const subjectsRes = await fetch("/subjects", { credentials: "include" });
+    const subjects = await subjectsRes.json();
 
-    tasks = await taskRes.json();
+    // Fetch tasks for all subjects
+    let allTasks = [];
+    for (let sub of subjects) {
+      const res = await fetch(`/tasks/${sub.id}`, { credentials: "include" });
+      const tasksBySub = await res.json();
+      allTasks = allTasks.concat(tasksBySub);
+    }
+    tasks = allTasks;
+
+    // Fetch exams
+    const examRes = await fetch("/exams", { credentials: "include" });
     exams = await examRes.json();
 
-    renderCalendar(); // render after data loaded
+    // Render calendar
+    renderCalendar();
   } catch (err) {
     console.error("Error loading events:", err);
   }
@@ -96,9 +106,8 @@ function renderCalendar() {
 
     box.innerHTML = `<strong>${day}</strong>`;
 
-    // TASKS
+    // Add tasks
     tasks.forEach((task) => {
-      // Normalize date: support "YYYY-MM-DD" or ISO
       const taskDate = task.due_date.split("T")[0] || task.due_date;
       if (taskDate === dateStr) {
         const e = document.createElement("div");
@@ -109,7 +118,7 @@ function renderCalendar() {
       }
     });
 
-    // EXAMS
+    // Add exams
     exams.forEach((exam) => {
       const examDate = exam.exam_date.split("T")[0] || exam.exam_date;
       if (examDate === dateStr) {
