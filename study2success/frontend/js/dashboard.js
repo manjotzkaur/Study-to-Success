@@ -17,14 +17,16 @@ function formatDate(isoString) {
 /* ==============================
    LOAD DASHBOARD DATA
 ============================== */
+let dashboardData = null; // store latest data
+
 async function loadDashboard() {
   try {
     const res = await fetch("/api/dashboard-data", { credentials: "include" });
-    const data = await res.json();
+    dashboardData = await res.json();
 
-    const subjects = data.subjects;
-    const tasks = data.tasks;
-    const exams = data.exams;
+    const subjects = dashboardData.subjects;
+    const tasks = dashboardData.tasks;
+    const exams = dashboardData.exams;
 
     document.getElementById("totalSubjects").textContent = subjects.length;
     document.getElementById("totalTasks").textContent = tasks.length;
@@ -36,7 +38,7 @@ async function loadDashboard() {
     document.getElementById("progressBar").style.width = percent + "%";
     document.getElementById("progressPercent").textContent = percent + "%";
 
-    const totalSeconds = data.totalStudySeconds || 0;
+    const totalSeconds = dashboardData.totalStudySeconds || 0;
     const h = Math.floor(totalSeconds / 3600);
     const m = Math.floor((totalSeconds % 3600) / 60);
     const s = totalSeconds % 60;
@@ -57,7 +59,6 @@ async function loadDashboard() {
 async function loadTodayTasks() {
   const list = document.getElementById("todayTasks");
   if (!list) return;
-
   list.innerHTML = "";
 
   try {
@@ -94,7 +95,6 @@ async function loadTodayTasks() {
 async function loadAllSchedule() {
   const list = document.getElementById("allSchedule");
   if (!list) return;
-
   list.innerHTML = "";
 
   try {
@@ -219,6 +219,71 @@ document.getElementById("stopStudy")?.addEventListener("click", () => {
 
   studySeconds = 0;
   updateTimerDisplay();
+});
+
+/* ==============================
+   QUICK ACTION: ADD TASK
+============================== */
+document.getElementById("saveTaskBtn")?.addEventListener("click", async () => {
+  const taskInput = document.getElementById("newTaskInput");
+  const title = taskInput.value.trim();
+  if (!title) return;
+
+  // Use first subject by default if exists
+  const subjectId = dashboardData.subjects.length ? dashboardData.subjects[0].id : null;
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  if (!subjectId) {
+    alert("Add a subject first!");
+    return;
+  }
+
+  try {
+    const res = await fetch("/tasks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, subjectId, dueDate: todayStr }),
+      credentials: "include"
+    });
+
+    const data = await res.json();
+    if (data.success) {
+      taskInput.value = "";
+      // hide modal
+      const modalEl = document.getElementById("addTaskModal");
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      modal.hide();
+
+      // reload dashboard info
+      loadDashboard();
+      loadTodayTasks();
+      loadAllSchedule();
+      checkDeadlines();
+    }
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+/* ==============================
+   QUICK ACTION: VIEW STATS
+============================== */
+document.getElementById("viewStatsBtn")?.addEventListener("click", () => {
+  if (!dashboardData) return;
+  const tasks = dashboardData.tasks;
+  const subjects = dashboardData.subjects;
+  const completedCount = tasks.filter(t => t.completed).length;
+  const totalSeconds = dashboardData.totalStudySeconds || 0;
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+
+  document.getElementById("statsText").innerHTML = `
+    <strong>Total Subjects:</strong> ${subjects.length}<br>
+    <strong>Total Tasks:</strong> ${tasks.length}<br>
+    <strong>Completed Tasks:</strong> ${completedCount}<br>
+    <strong>Study Time:</strong> ${h}h ${m}m ${s}s
+  `;
 });
 
 /* ==============================
